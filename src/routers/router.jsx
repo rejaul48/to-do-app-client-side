@@ -4,6 +4,7 @@ import ErrorPage from "../pages/ErrorPage/ErrorPage";
 import TodaysTasks from "../pages/TodaysTasks/TodaysTasks";
 import AddTasks from "../pages/AddTasks/AddTasks";
 import UpdateTask from "../pages/UpdateTask/UpdateTask";
+import useAxiosPublic from "../hooks/useAxiosPublic";
 
 
 const routers = createBrowserRouter([
@@ -11,9 +12,9 @@ const routers = createBrowserRouter([
         path: '/',
         element: <MainLayout ></MainLayout>,
         errorElement: <ErrorPage ></ErrorPage>,
-        children:[
+        children: [
             {
-                path:'todays-tasks',
+                path: 'todays-tasks',
                 element: <TodaysTasks ></TodaysTasks>
             },
             {
@@ -21,9 +22,11 @@ const routers = createBrowserRouter([
                 element: <AddTasks ></AddTasks>
             },
             {
-                path: 'update-task',
-                element: <UpdateTask ></UpdateTask>
+                path: 'update-task/:id',
+                element: <UpdateTask />,
+               
             }
+
         ]
     }
 ])
