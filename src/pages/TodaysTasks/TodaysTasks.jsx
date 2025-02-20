@@ -1,22 +1,23 @@
 
+
 import React, { useEffect, useState } from 'react';
-import { FaPen } from "react-icons/fa";
-import { CiTrash } from "react-icons/ci";
+import { FaPen } from 'react-icons/fa';
+import { CiTrash } from 'react-icons/ci';
 import { useDrag, useDrop } from 'react-dnd';
 import { Link } from 'react-router-dom';
 import useAxiosPublic from '../../hooks/useAxiosPublic';
 import TaskTimer from '../../components/TaskTimer/TaskTimer';
 
-const truncateText = (text = "", wordLimit) => {
-    if (!text) return "";
-    const words = text.split(" ");
-    return words.length > wordLimit ? words.slice(0, wordLimit).join(" ") + " ..." : text;
+const truncateText = (text = '', wordLimit) => {
+    if (!text) return '';
+    const words = text.split(' ');
+    return words.length > wordLimit ? words.slice(0, wordLimit).join(' ') + ' ...' : text;
 };
 
 const Task = ({ task, index, moveTask, category, handleTaskDelete }) => {
     const [, drag] = useDrag({
         type: 'TASK',
-        item: { index, category, task }
+        item: { index, category, task },
     });
 
     const [, drop] = useDrop({
@@ -32,7 +33,7 @@ const Task = ({ task, index, moveTask, category, handleTaskDelete }) => {
             if (item.index !== index || item.category !== category) {
                 moveTask(item.index, index, item.category, category);
             }
-        }
+        },
     });
 
     return (
@@ -60,19 +61,20 @@ const TodaysTasks = () => {
         axiosPublic.get('/tasks')
             .then(res => {
                 const fetchedTasks = Array.isArray(res.data) ? res.data : [];
-                setTasks({
-                    todo: fetchedTasks.filter(task => task.category === "todo"),
-                    inProgress: fetchedTasks.filter(task => task.category === "inProgress"),
-                    done: fetchedTasks.filter(task => task.category === "done"),
-                });
+                const sortedTasks = {
+                    todo: fetchedTasks.filter(task => task.category === 'todo').sort((a, b) => a.position - b.position),
+                    inProgress: fetchedTasks.filter(task => task.category === 'inProgress').sort((a, b) => a.position - b.position),
+                    done: fetchedTasks.filter(task => task.category === 'done').sort((a, b) => a.position - b.position),
+                };
+                setTasks(sortedTasks);
             })
-            .catch(err => console.error("Error fetching tasks:", err));
+            .catch(err => console.error('Error fetching tasks:', err));
     }, []);
 
     const handleTaskDelete = (id) => {
         axiosPublic.delete(`/tasks/${id}`)
             .then(() => {
-                alert("Task Deleted successfully");
+                alert('Task deleted successfully');
                 setTasks(prevTasks => ({
                     todo: prevTasks.todo.filter(task => task._id !== id),
                     inProgress: prevTasks.inProgress.filter(task => task._id !== id),
@@ -82,30 +84,45 @@ const TodaysTasks = () => {
             .catch(err => console.log(err));
     };
 
-    const moveTask = (fromIndex, toIndex, fromCategory, toCategory) => {
-        if (fromCategory !== toCategory) {
-            const fromTasks = [...tasks[fromCategory]];
-            const toTasks = [...tasks[toCategory]];
-            const [movedTask] = fromTasks.splice(fromIndex, 1);
+    const moveTask = async (fromIndex, toIndex, fromCategory, toCategory) => {
+        const fromTasks = [...tasks[fromCategory]];
+        const toTasks = fromCategory === toCategory ? fromTasks : [...tasks[toCategory]];
+        const [movedTask] = fromTasks.splice(fromIndex, 1);
 
-            // Preserve task properties and just update category locally
-            movedTask.category = toCategory;
+        // Update the task's category and position
+        movedTask.category = toCategory;
+        movedTask.position = toIndex;
 
-            toTasks.splice(toIndex, 0, movedTask);
+        // Insert the task into the new position
+        toTasks.splice(toIndex, 0, movedTask);
 
-            setTasks({
-                ...tasks,
-                [fromCategory]: fromTasks,
-                [toCategory]: toTasks
+        // Optimistically update the UI
+        setTasks((prevTasks) => ({
+            ...prevTasks,
+            [fromCategory]: fromTasks,
+            [toCategory]: toTasks,
+        }));
+
+        // Sync with the server
+        try {
+            const response = await axiosPublic.put(`/tasks/updatePosition/${movedTask._id}`, {
+                category: toCategory,
+                position: toIndex,
             });
-        } else {
-            const categoryTasks = [...tasks[fromCategory]];
-            const [movedTask] = categoryTasks.splice(fromIndex, 1);
-            categoryTasks.splice(toIndex, 0, movedTask);
-            setTasks({ ...tasks, [fromCategory]: categoryTasks });
+
+            if (response.data.success) {
+                console.log('Task position updated successfully on the server');
+            } else {
+                throw new Error('Failed to update task position on the server');
+            }
+        } catch (err) {
+            console.error('Failed to update task position on the server:', err);
+
+            // Revert the UI if the server update fails
+            const prevTasks = { ...tasks };
+            setTasks(prevTasks);
         }
     };
-
 
     const createDropTarget = (category) => {
         const [, drop] = useDrop({
@@ -114,7 +131,7 @@ const TodaysTasks = () => {
                 if (item.category !== category) {
                     moveTask(item.index, 0, item.category, category);
                 }
-            }
+            },
         });
         return drop;
     };
@@ -134,7 +151,7 @@ const TodaysTasks = () => {
                                 {tasks[category].length > 0 ? tasks[category].map((task, index) => (
                                     <Task key={task._id} index={index} task={task} category={category} moveTask={moveTask} handleTaskDelete={handleTaskDelete} />
                                 )) : (
-                                    <li className="text-center text-white">No tasks in this category</li>
+                                    <li className='text-center text-white'>No tasks in this category</li>
                                 )}
                             </ul>
                         </div>
