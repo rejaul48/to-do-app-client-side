@@ -4,6 +4,7 @@ import { FaTasks } from "react-icons/fa";
 import { Link, Outlet } from 'react-router-dom';
 import { SlCalender } from "react-icons/sl";
 import { GiBrickWall } from "react-icons/gi";
+import { IoMdAdd } from 'react-icons/io';
 const MainLayout = () => {
     return (
         <>
@@ -11,7 +12,7 @@ const MainLayout = () => {
             <main>
 
                 <section className='grid grid-cols-12'>
-                    
+
                     {/* left side menubar for to to task list */}
 
                     <section className='md:col-span-3 bg-gray-600 px-4 md:min-h-screen'>
@@ -19,7 +20,7 @@ const MainLayout = () => {
                         {/* menu heading and menu icon for drawer */}
                         <div className='flex items-center justify-between py-4'>
                             <h2 className='text-xl md:text-2xl font-semibold capitalize text-white'>Menu</h2>
-                             
+
                         </div>
 
                         {/* some menu links here for some action
@@ -27,6 +28,12 @@ const MainLayout = () => {
                              
                         */}
                         <div>
+
+                            <div>
+                                <Link to={'/add-task'} className='btn add_btn flex items-center gap-1 bg-sky-400 p-3 rounded-sm hover:cursor-pointer'>
+                                    <span><IoMdAdd /></span> Add Task
+                                </Link>
+                            </div>
 
                             {/* for task -> menubar */}
                             <ul className="menu menu-md bg-base-200 rounded-box w-full bg-white rounded-md px-3 py-4">

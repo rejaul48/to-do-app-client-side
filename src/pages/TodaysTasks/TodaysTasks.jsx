@@ -1,10 +1,11 @@
- 
-import React, { useState } from 'react';
+
+import React, { useEffect, useState } from 'react';
 import { IoMdAdd } from "react-icons/io";
 import { FaPen } from "react-icons/fa";
 import { CiTrash } from "react-icons/ci";
 import { useDrag, useDrop } from 'react-dnd';
 import { Link } from 'react-router-dom';
+import useAxiosPublic from '../../hooks/useAxiosPublic';
 
 // Function to truncate text based on word limit
 const truncateText = (text, wordLimit) => {
@@ -47,7 +48,7 @@ const Task = ({ task, index, moveTask, category }) => {
             </Link>
 
             <div className='space-y-3 col-span-1 flex flex-col'>
-                <Link><FaPen className='text-lg' /></Link>
+                <Link to={'/update-task'}><FaPen className='text-lg' /></Link>
                 <Link><CiTrash className='text-xl text-red-500' /></Link>
             </div>
         </li>
@@ -56,26 +57,42 @@ const Task = ({ task, index, moveTask, category }) => {
 
 const TodaysTasks = () => {
     const [tasks, setTasks] = useState({
-        todo: [
-            { title: "Task 1", description: "Description for Task 1" },
-            { title: "Task 2", description: "Description for Task 2" }
-        ],
-        inProgress: [
-            { title: "Task 3", description: "Description for Task 3" },
-            { title: "Task 4", description: "Description for Task 4" }
-        ],
-        done: [
-            { title: "Task 5", description: "Description for Task 5" },
-            { title: "Task 6", description: "Description for Task 6" }
-        ]
+        todo: [],
+        inProgress: [],
+        done: []
     });
 
-    // Function to move tasks between categories
+    const axiosPublic = useAxiosPublic();
+
+    // Fetch tasks from the database and categorize them
+    useEffect(() => {
+        axiosPublic.get('/tasks')
+            .then(res => {
+                console.log("API Response:", res.data);  // Debugging
+                const fetchedTasks = Array.isArray(res.data) ? res.data : [];
+                const categorizedTasks = {
+                    todo: fetchedTasks.filter(task => task?.category === "todo"),
+                    inProgress: fetchedTasks.filter(task => task?.category === "inProgress"),
+                    done: fetchedTasks.filter(task => task?.category === "done"),
+                };
+                console.log("Categorized Tasks:", categorizedTasks); // Debugging
+                setTasks(categorizedTasks);
+            })
+            .catch(err => {
+                console.error("Error fetching tasks:", err);
+                setTasks({ todo: [], inProgress: [], done: [] });
+            });
+    }, []);
+    
+
+    console.log("Categorized Tasks:", tasks);
+
     const moveTask = (fromIndex, toIndex, fromCategory, toCategory) => {
         if (fromCategory !== toCategory) {
             const fromTasks = [...tasks[fromCategory]];
             const toTasks = [...tasks[toCategory]];
             const [movedTask] = fromTasks.splice(fromIndex, 1);
+            movedTask.status = toCategory; // Update status
             toTasks.splice(toIndex, 0, movedTask);
 
             setTasks({
@@ -83,8 +100,11 @@ const TodaysTasks = () => {
                 [fromCategory]: fromTasks,
                 [toCategory]: toTasks
             });
+
+            // Optionally update the task status in the database
+            axiosPublic.put(`/tasks/${movedTask.id}`, { status: toCategory })
+                .catch(err => console.log("Error updating task status:", err));
         } else {
-            // If it's the same category, just reorder the task
             const categoryTasks = [...tasks[fromCategory]];
             const [movedTask] = categoryTasks.splice(fromIndex, 1);
             categoryTasks.splice(toIndex, 0, movedTask);
@@ -96,7 +116,6 @@ const TodaysTasks = () => {
         }
     };
 
-    // For each category, set up a drop target that accepts tasks
     const createDropTarget = (category) => {
         const [, drop] = useDrop({
             accept: 'TASK',
@@ -114,9 +133,6 @@ const TodaysTasks = () => {
             <section className='py-5'>
                 <div className='flex items-center justify-between p-4 bg-amber-200 w-[95%] mx-auto'>
                     <h2 className='text-2xl md:text-3xl capitalize font-semibold'>Add your tasks here..</h2>
-                    <button className='btn flex items-center gap-1 bg-sky-400 p-3 rounded-sm hover:cursor-pointer'>
-                        <span><IoMdAdd /></span> Add Task
-                    </button>
                 </div>
 
                 {/* 3 categories to do list */}
@@ -126,7 +142,7 @@ const TodaysTasks = () => {
                         <h2 className='capitalize text-xl md:text-2xl font-semibold pb-3 text-white'>To-do-list: </h2>
                         <ul className='space-y-3 overflow-y-auto h-[calc(75vh-70px)] no-scrollbar'>
                             {tasks.todo.length > 0 ? tasks.todo.map((task, index) => (
-                                <Task key={index} index={index} task={task} category="todo" moveTask={moveTask} />
+                                <Task key={task.id} index={index} task={task} category="todo" moveTask={moveTask} />
                             )) : (
                                 <li className="text-center text-white">No tasks in this category</li>
                             )}
@@ -138,7 +154,7 @@ const TodaysTasks = () => {
                         <h2 className='capitalize text-xl md:text-2xl font-semibold pb-3 text-white'>In progress: </h2>
                         <ul className='space-y-3 overflow-y-auto h-[calc(75vh-70px)] no-scrollbar'>
                             {tasks.inProgress.length > 0 ? tasks.inProgress.map((task, index) => (
-                                <Task key={index} index={index} task={task} category="inProgress" moveTask={moveTask} />
+                                <Task key={task.id} index={index} task={task} category="inProgress" moveTask={moveTask} />
                             )) : (
                                 <li className="text-center text-white">No tasks in this category</li>
                             )}
@@ -150,7 +166,7 @@ const TodaysTasks = () => {
                         <h2 className='capitalize text-xl md:text-2xl font-semibold pb-3 text-white'>Done: </h2>
                         <ul className='space-y-3 overflow-y-auto h-[calc(75vh-70px)] no-scrollbar'>
                             {tasks.done.length > 0 ? tasks.done.map((task, index) => (
-                                <Task key={index} index={index} task={task} category="done" moveTask={moveTask} />
+                                <Task key={task.id} index={index} task={task} category="done" moveTask={moveTask} />
                             )) : (
                                 <li className="text-center text-white">No tasks in this category</li>
                             )}
