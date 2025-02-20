@@ -6,6 +6,7 @@ import { CiTrash } from "react-icons/ci";
 import { useDrag, useDrop } from 'react-dnd';
 import { Link } from 'react-router-dom';
 import useAxiosPublic from '../../hooks/useAxiosPublic';
+import TaskTimer from '../../components/TaskTimer/TaskTimer';
 
 // Function to truncate text based on word limit
 const truncateText = (text, wordLimit) => {
@@ -14,7 +15,7 @@ const truncateText = (text, wordLimit) => {
 };
 
 // Task Component for each task
-const Task = ({ task, index, moveTask, category }) => {
+const Task = ({ task, index, moveTask, category, handleTaskDelete }) => {
     const [, drag] = useDrag({
         type: 'TASK',
         item: { index, category, task }
@@ -45,11 +46,14 @@ const Task = ({ task, index, moveTask, category }) => {
                 <p className='text-sm text-gray-500 mt-1 task_description'>
                     {truncateText(task.description, 6)}
                 </p>
+                <div className='text-sm text-gray-500 mt-1 time_remaining'>
+                    <TaskTimer task={task}></TaskTimer>
+                </div>
             </Link>
 
             <div className='space-y-3 col-span-1 flex flex-col'>
                 <Link to={'/update-task'}><FaPen className='text-lg' /></Link>
-                <Link><CiTrash className='text-xl text-red-500' /></Link>
+                <Link onClick={() => handleTaskDelete(task._id)}><CiTrash className='text-xl text-red-500' /></Link>
             </div>
         </li>
     );
@@ -68,14 +72,12 @@ const TodaysTasks = () => {
     useEffect(() => {
         axiosPublic.get('/tasks')
             .then(res => {
-                console.log("API Response:", res.data);  // Debugging
                 const fetchedTasks = Array.isArray(res.data) ? res.data : [];
                 const categorizedTasks = {
                     todo: fetchedTasks.filter(task => task?.category === "todo"),
                     inProgress: fetchedTasks.filter(task => task?.category === "inProgress"),
                     done: fetchedTasks.filter(task => task?.category === "done"),
                 };
-                console.log("Categorized Tasks:", categorizedTasks); // Debugging
                 setTasks(categorizedTasks);
             })
             .catch(err => {
@@ -83,10 +85,22 @@ const TodaysTasks = () => {
                 setTasks({ todo: [], inProgress: [], done: [] });
             });
     }, []);
-    
 
-    console.log("Categorized Tasks:", tasks);
+    // Handle task deletion
+    const handleTaskDelete = (id) => {
+        axiosPublic.delete(`/tasks/${id}`)
+            .then(() => {
+                alert("Task Deleted successfully");
+                setTasks(prevTasks => ({
+                    todo: prevTasks.todo.filter(task => task._id !== id),
+                    inProgress: prevTasks.inProgress.filter(task => task._id !== id),
+                    done: prevTasks.done.filter(task => task._id !== id),
+                }));
+            })
+            .catch(err => console.log(err));
+    };
 
+    // Function to move tasks between categories
     const moveTask = (fromIndex, toIndex, fromCategory, toCategory) => {
         if (fromCategory !== toCategory) {
             const fromTasks = [...tasks[fromCategory]];
@@ -102,7 +116,7 @@ const TodaysTasks = () => {
             });
 
             // Optionally update the task status in the database
-            axiosPublic.put(`/tasks/${movedTask.id}`, { status: toCategory })
+            axiosPublic.put(`/tasks/${movedTask._id}`, { status: toCategory })
                 .catch(err => console.log("Error updating task status:", err));
         } else {
             const categoryTasks = [...tasks[fromCategory]];
@@ -116,6 +130,7 @@ const TodaysTasks = () => {
         }
     };
 
+    // Function to create a drop target for a category
     const createDropTarget = (category) => {
         const [, drop] = useDrop({
             accept: 'TASK',
@@ -135,38 +150,38 @@ const TodaysTasks = () => {
                     <h2 className='text-2xl md:text-3xl capitalize font-semibold'>Add your tasks here..</h2>
                 </div>
 
-                {/* 3 categories to do list */}
+                {/* 3 categories to-do list */}
                 <section className='w-[95%] mx-auto grid grid-cols-1 md:grid-cols-3 mt-5 gap-3'>
-                    {/* To-do-list */}
+                    {/* To-do List */}
                     <div ref={createDropTarget('todo')} className='bg-gray-500 p-2 rounded-sm h-[75vh]'>
-                        <h2 className='capitalize text-xl md:text-2xl font-semibold pb-3 text-white'>To-do-list: </h2>
+                        <h2 className='capitalize text-xl md:text-2xl font-semibold pb-3 text-white'>To-do List: </h2>
                         <ul className='space-y-3 overflow-y-auto h-[calc(75vh-70px)] no-scrollbar'>
                             {tasks.todo.length > 0 ? tasks.todo.map((task, index) => (
-                                <Task key={task.id} index={index} task={task} category="todo" moveTask={moveTask} />
+                                <Task key={task._id} index={index} task={task} category="todo" moveTask={moveTask} handleTaskDelete={handleTaskDelete} />
                             )) : (
                                 <li className="text-center text-white">No tasks in this category</li>
                             )}
                         </ul>
                     </div>
 
-                    {/* In progress list */}
+                    {/* In Progress List */}
                     <div ref={createDropTarget('inProgress')} className='bg-gray-500 p-2 rounded-sm h-[75vh]'>
-                        <h2 className='capitalize text-xl md:text-2xl font-semibold pb-3 text-white'>In progress: </h2>
+                        <h2 className='capitalize text-xl md:text-2xl font-semibold pb-3 text-white'>In Progress: </h2>
                         <ul className='space-y-3 overflow-y-auto h-[calc(75vh-70px)] no-scrollbar'>
                             {tasks.inProgress.length > 0 ? tasks.inProgress.map((task, index) => (
-                                <Task key={task.id} index={index} task={task} category="inProgress" moveTask={moveTask} />
+                                <Task key={task._id} index={index} task={task} category="inProgress" moveTask={moveTask} handleTaskDelete={handleTaskDelete} />
                             )) : (
                                 <li className="text-center text-white">No tasks in this category</li>
                             )}
                         </ul>
                     </div>
 
-                    {/* Done list */}
+                    {/* Done List */}
                     <div ref={createDropTarget('done')} className='bg-gray-500 p-2 rounded-sm h-[75vh]'>
                         <h2 className='capitalize text-xl md:text-2xl font-semibold pb-3 text-white'>Done: </h2>
                         <ul className='space-y-3 overflow-y-auto h-[calc(75vh-70px)] no-scrollbar'>
                             {tasks.done.length > 0 ? tasks.done.map((task, index) => (
-                                <Task key={task.id} index={index} task={task} category="done" moveTask={moveTask} />
+                                <Task key={task._id} index={index} task={task} category="done" moveTask={moveTask} handleTaskDelete={handleTaskDelete} />
                             )) : (
                                 <li className="text-center text-white">No tasks in this category</li>
                             )}
