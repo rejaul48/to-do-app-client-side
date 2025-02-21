@@ -18,7 +18,7 @@ const TaskTimer = ({ task }) => {
             }
 
             // Convert milliseconds into months, days, hours, minutes, and seconds
-            const months = Math.floor(difference / (1000 * 60 * 60 * 24 * 30)); // Approximate month count
+            const months = Math.floor(difference / (1000 * 60 * 60 * 24 * 30));
             const days = Math.floor((difference % (1000 * 60 * 60 * 24 * 30)) / (1000 * 60 * 60 * 24));
             const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
