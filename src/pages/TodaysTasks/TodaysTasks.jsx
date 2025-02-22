@@ -92,7 +92,7 @@ const TodaysTasks = () => {
                     .then(() => {
                         Swal.fire({
                             title: "Deleted!",
-                            text: "Your file has been deleted.",
+                            text: "Your task has been deleted.",
                             icon: "success"
                         });
                         queryClient.invalidateQueries(['tasks', user?.email || currentUser?.email]);
