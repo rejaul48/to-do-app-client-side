@@ -183,9 +183,9 @@ const TodaysTasks = () => {
         });
 
         return (
-            <div ref={drop} className='border-[1px] border-[#66785F] p-2 rounded-sm h-[350px] md:h-[40vh] lg:h-[70vh]'>
+            <div ref={drop} className='border-[1px] border-[#66785F] p-2 rounded-sm h-[350px] md:h-[25vh] lg:h-[70vh]'>
                 <h2 className={`text-xl md:text-2xl font-semibold pb-2 ${theme === 'dark' ? "text-white" : 'text-black'}`}>{category}:</h2>
-                <ul className='space-y-3 overflow-y-auto h-[calc(75vh-70px)]'>
+                <ul className='space-y-3 overflow-y-auto lg:h-[calc(75vh-70px)]'>
                     {tasks.map((task, index) => (
                         <DraggableTask key={task._id} task={task} category={category} index={index} />
                     ))}
@@ -201,7 +201,7 @@ const TodaysTasks = () => {
                     <h2 className='text-xl md:text-2xl font-semibold uppercase'>Add your task {currentUser?.name}</h2>
                 </div>
 
-                <section className='w-[95%] mx-auto grid grid-cols-1 md:grid-cols-3 gap-3 mt-5'>
+                <section className='w-[95%] mx-auto grid grid-cols-1 lg:grid-cols-3 gap-3 mt-5'>
                     {['todo', 'inProgress', 'done'].map(category => (
                         <DroppableCategory key={category} category={category} tasks={tasks[category]} />
                     ))}
