@@ -1,8 +1,9 @@
 import React, { useContext } from 'react';
-import { ToDoContext } from '../../authContext/ContextApi'; // Assuming context is here
+import { ToDoContext } from '../../authContext/ContextApi'; 
 
 const ThemeToggleButton = () => {
-    const { theme, toggleTheme } = useContext(ToDoContext); // Get theme and toggle function from context
+    // Get theme and toggle function from context
+    const { theme, toggleTheme } = useContext(ToDoContext); 
 
     return (
         <button

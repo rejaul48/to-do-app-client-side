@@ -38,18 +38,7 @@ const LoginPage = () => {
         }
     };
 
-    // const handleUserLogin = async (e) => {
-    //     e.preventDefault();
-    //     try {
-    //         const res = await loginRegisterUser(loginEmail, loginPass);
-    //         setUser(res?.data);
-    //         alert('User logged in successfully');
-    //         navigate('/todays-tasks')
-    //     } catch (err) {
-    //         console.error(err);
-    //         alert('Login failed. Please check your credentials.');
-    //     }
-    // };
+  
 
     return (
         <div className="flex justify-center items-center h-[100vh] md:p-4">

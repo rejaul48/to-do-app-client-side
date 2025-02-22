@@ -24,43 +24,7 @@ const AddTasks = () => {
     };
 
     // Handle form submission
-    // const handleAddTask = (e) => {
-    //     e.preventDefault();
 
-    //     const form = e.target;
-    //     const title = form.title.value;
-    //     const description = form.description.value;
-    //     const category = form.category.value;
-    //     const setTime = taskDateTime;
-    //     const email = user?.email || currentUser?.email;
-
-    //     // Capture the submission time in Bangladesh Time
-    //     const submissionDate = new Date();
-    //     const submittedTimeBD = submissionDate.toLocaleString("en-BD", { timeZone: "Asia/Dhaka" });
-
-    //     // Set the submitted time in state
-    //     setSubmittedTime(submittedTimeBD);
-
-    //     // Create task object
-    //     const task = { title, description, category, setTime, submittedTime: submittedTimeBD ,email};
-
-    //     console.log("Task Submitted:", task);
-
-    //     // send into database
-    //     try {
-    //         axiosPublic.post('/tasks', task)
-    //         .then(res =>{
-    //             console.log(res)
-    //             alert("task added successfully")
-    //         })
-    //         .catch(err => console.log(err))
-    //     }
-    //     catch (error) {
-    //         console.error("Error submitting task:", error);
-    //         alert("Failed to save the task. Please try again.");
-    //     }
-
-    // };
 
     const handleAddTask = async (e) => {
         e.preventDefault();
