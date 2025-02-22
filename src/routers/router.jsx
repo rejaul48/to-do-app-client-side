@@ -1,3 +1,4 @@
+
 import { createBrowserRouter } from "react-router-dom";
 import MainLayout from "../layout/MainLayout";
 import ErrorPage from "../pages/ErrorPage/ErrorPage";
@@ -8,45 +9,38 @@ import RegisterPage from "../pages/Authentication/RegisterPage/RegisterPage";
 import LoginPage from "../pages/Authentication/LoginPage/LoginPage";
 import PrivetRoute from "./PrivetRoute";
 
-
 const routers = createBrowserRouter([
     {
         path: '/',
-        element: <MainLayout ></MainLayout>,
-        errorElement: <ErrorPage ></ErrorPage>,
+        element: (
+            <PrivetRoute>
+                <MainLayout />
+            </PrivetRoute>
+        ),
+        errorElement: <ErrorPage />,
         children: [
             {
                 path: 'todays-tasks',
-                element: 
-                <PrivetRoute >
-                    <TodaysTasks ></TodaysTasks>
-
-                </PrivetRoute>
+                element: <TodaysTasks />
             },
             {
                 path: 'add-task',
-                element:
-                 <PrivetRoute >
-                    <AddTasks ></AddTasks>
-                </PrivetRoute>
+                element: <AddTasks />
             },
             {
                 path: 'update-task/:id',
-                element: 
-                <PrivetRoute >
-                    <UpdateTask />,
-                </PrivetRoute>
-
+                element: <UpdateTask />
             }
-
-        ],
-    }, {
+        ]
+    },
+    {
         path: '/register',
-        element: <RegisterPage ></RegisterPage>
-    }, {
+        element: <RegisterPage />
+    },
+    {
         path: '/login',
-        element: <LoginPage ></LoginPage>
+        element: <LoginPage />
     }
-])
+]);
 
-export default routers
+export default routers;
