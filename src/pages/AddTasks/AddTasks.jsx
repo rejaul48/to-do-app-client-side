@@ -3,6 +3,7 @@ import React, { useContext, useState } from 'react';
 import useAxiosPublic from '../../hooks/useAxiosPublic';
 import { ToDoContext } from '../../authContext/ContextApi';
 import Swal from 'sweetalert2';
+import { useNavigate } from 'react-router-dom';
 
 const AddTasks = () => {
     const [taskDateTime, setTaskDateTime] = useState('');
@@ -13,6 +14,7 @@ const AddTasks = () => {
 
     // get axiospublic custom hooks
     const axiosPublic = useAxiosPublic()
+    const navigate = useNavigate()
 
     // Convert a given time to Bangladesh Time (BST)
     const getFormattedBDTime = (dateTime) => {
@@ -57,6 +59,8 @@ const AddTasks = () => {
                 icon: "success",
                 draggable: true
             });
+            // navigate to selected route
+            navigate('/todays-tasks')
         } catch (error) {
             console.error("Error submitting task:", error);
             Swal.fire({

@@ -208,8 +208,10 @@ const TodaysTasks = () => {
                 </section>
 
                 <Modal isOpen={!!selectedTask} onClose={() => setSelectedTask(null)}>
-                    <h2 className="text-lg font-bold">{selectedTask?.title}</h2>
-                    <p>{selectedTask?.description}</p>
+                    <div >
+                        <h2 className="text-lg font-bold">{selectedTask?.title}</h2>
+                        <p>{selectedTask?.description}</p>
+                    </div>
                 </Modal>
             </section>
         </main>

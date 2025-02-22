@@ -1,13 +1,14 @@
 
 
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import useAxiosPublic from '../../hooks/useAxiosPublic';
 import Swal from 'sweetalert2';
 
 const UpdateTask = () => {
     const { id } = useParams();
     const axiosPublic = useAxiosPublic();
+    const navigate = useNavigate()
 
     // Store task for update
     const [forUpdateTask, setForUpdateTask] = useState({});
@@ -66,6 +67,9 @@ const UpdateTask = () => {
                     icon: "success",
                     draggable: true
                 });
+
+                // navigate to selected route
+                navigate('/todays-tasks')
             })
             .catch(err => {
                 console.error("Error updating task:", err);
