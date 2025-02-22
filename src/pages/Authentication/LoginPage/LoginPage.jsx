@@ -27,7 +27,7 @@ const LoginPage = () => {
 
             if (res?.data) {
                 setUser(res?.data);  // Set user data in context
-                alert('User logged in successfully');
+               
                
             } else {
                 // alert('Login failed. Please check your credentials.');
@@ -39,9 +39,20 @@ const LoginPage = () => {
     };
 
   
+    //     e.preventDefault();
+    //     try {
+    //         const res = await loginRegisterUser(loginEmail, loginPass);
+    //         setUser(res?.data);
+    //         alert('User logged in successfully');
+    //         navigate('/todays-tasks')
+    //     } catch (err) {
+    //         console.error(err);
+    //         alert('Login failed. Please check your credentials.');
+    //     }
+    // };
 
     return (
-        <div className="flex justify-center items-center h-[100vh] md:p-4">
+        <div className="flex justify-center items-center h-[100vh] md:p-4 px-4 xl:px-0">
             <div className="bg-white p-2 md:p-8 rounded-lg shadow-lg w-full max-w-2xl border-[1px]">
                 <h2 className="text-2xl font-semibold text-center mb-6">Welcome</h2>
 

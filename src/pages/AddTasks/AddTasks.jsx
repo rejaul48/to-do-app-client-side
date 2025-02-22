@@ -2,6 +2,7 @@
 import React, { useContext, useState } from 'react';
 import useAxiosPublic from '../../hooks/useAxiosPublic';
 import { ToDoContext } from '../../authContext/ContextApi';
+import Swal from 'sweetalert2';
 
 const AddTasks = () => {
     const [taskDateTime, setTaskDateTime] = useState('');
@@ -50,11 +51,19 @@ const AddTasks = () => {
 
         try {
             const res = await axiosPublic.post('/tasks', task);
-            console.log("Response:", res);  // Check the response structure
-            alert("Task added successfully");
+            console.log("Response:", res);
+            Swal.fire({
+                title: "Task Added successfully",
+                icon: "success",
+                draggable: true
+            });
         } catch (error) {
             console.error("Error submitting task:", error);
-            alert("Failed to save the task. Please try again.");
+            Swal.fire({
+                title: "Task Added faild!",
+                icon: "error",
+                draggable: true
+            });
         }
     };
 

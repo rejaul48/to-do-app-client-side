@@ -3,6 +3,7 @@ import { FaGoogle } from 'react-icons/fa'
 import { Link, useNavigate } from 'react-router-dom'
 import { ToDoContext } from '../../authContext/ContextApi'
 import useAxiosPublic from '../../hooks/useAxiosPublic'
+import Swal from 'sweetalert2'
 
 const GoogleLogin = () => {
 
@@ -15,26 +16,27 @@ const GoogleLogin = () => {
 
         loginWithGoogle()
             .then((res) => {
-
-
-
                 // now send the data into database
                 const googleLoginUser = {
+                    uid: res?.user?.uid,
                     name: res?.user?.displayName,
                     email: res?.user?.email
                 }
 
                 axiosPublic.post('/register-people', googleLoginUser)
                     .then(res => {
+                        // first show swal alert
+                        Swal.fire({
+                            title: "Login successfully",
+                            icon: "success",
+                            draggable: true
+                        });
+                        // then user
                         setUser(res.data)
-                        alert("Login With Google Successfully")
+                        // then navigate to this route
                         navigate('/todays-tasks')
                     })
                     .catch(err => console.log(err))
-
-
-
-
             })
             .catch(err => console.log(err))
 

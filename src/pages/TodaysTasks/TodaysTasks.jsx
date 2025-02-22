@@ -6,6 +6,7 @@ import { ToDoContext } from '../../authContext/ContextApi';
 import useAxiosPublic from '../../hooks/useAxiosPublic';
 import Modal from '../../components/Modal/Modal';
 import TasksCard from '../../components/TasksCard/TasksCard';
+import Swal from 'sweetalert2';
 
 const TodaysTasks = () => {
     const axiosPublic = useAxiosPublic();
@@ -64,16 +65,51 @@ const TodaysTasks = () => {
     };
 
     // Delete task handler
+    // const handleTaskDelete = (id) => {
+    //     axiosPublic.delete(`/tasks/${id}`)
+    //         .then(() => {
+    //             alert("Task Deleted successfully");
+    //             queryClient.invalidateQueries(['tasks', user?.email || currentUser?.email]);
+    //         })
+    //         .catch(err => console.log(err));
+    // };
+
+
     const handleTaskDelete = (id) => {
-        axiosPublic.delete(`/tasks/${id}`)
-            .then(() => {
-                alert("Task Deleted successfully");
-                queryClient.invalidateQueries(['tasks', user?.email || currentUser?.email]);
-            })
-            .catch(err => console.log(err));
+
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+
+                axiosPublic.delete(`/tasks/${id}`)
+                    .then(() => {
+                        Swal.fire({
+                            title: "Deleted!",
+                            text: "Your file has been deleted.",
+                            icon: "success"
+                        });
+                        queryClient.invalidateQueries(['tasks', user?.email || currentUser?.email]);
+                    })
+                    .catch(err => console.log(err));
+
+
+            }
+        });
+
+
     };
 
+
+
     // Draggable Task Component
+
     const DraggableTask = ({ task, category, index }) => {
         const ref = React.useRef(null);
 
@@ -147,7 +183,7 @@ const TodaysTasks = () => {
         });
 
         return (
-            <div ref={drop} className='border-[1px] border-[#66785F] p-2 rounded-sm h-[75vh]'>
+            <div ref={drop} className='border-[1px] border-[#66785F] p-2 rounded-sm h-[350px] md:h-[40vh] lg:h-[70vh]'>
                 <h2 className={`text-xl md:text-2xl font-semibold pb-2 ${theme === 'dark' ? "text-white" : 'text-black'}`}>{category}:</h2>
                 <ul className='space-y-3 overflow-y-auto h-[calc(75vh-70px)]'>
                     {tasks.map((task, index) => (

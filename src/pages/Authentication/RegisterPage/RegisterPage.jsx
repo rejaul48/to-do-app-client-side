@@ -3,6 +3,7 @@ import GoogleLogin from '../../../components/GoogleLogin/GoogleLogin'
 import { Link, useNavigate } from 'react-router-dom'
 import { ToDoContext } from '../../../authContext/ContextApi'
 import useAxiosPublic from './../../../hooks/useAxiosPublic';
+import Swal from 'sweetalert2';
 
 const RegisterPage = () => {
 
@@ -37,17 +38,15 @@ const RegisterPage = () => {
             await axiosPublic.post('/register-people', user)
                 .then(res => {
                     setUser(res?.data);
-                    alert("User registered successfully");
                     navigate('/todays-tasks');
                 }).catch(err => console.log(err))
 
-            // navigate('/todays-tasks')
-
+           
             // Reset form
             form.reset();
         } catch (error) {
             console.error("Registration error:", error);
-            alert(error.message);
+            
         }
     };
 

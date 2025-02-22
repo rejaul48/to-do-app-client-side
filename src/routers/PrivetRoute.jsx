@@ -12,7 +12,7 @@ const PrivetRoute = ({ children }) => {
     if (loader) {
         return (
             <div className='flex items-center justify-center h-full '>
-             <p>Loading....</p>
+                <p>Loading....</p>
             </div>
         )
     }
@@ -21,8 +21,12 @@ const PrivetRoute = ({ children }) => {
         return children;
     }
 
-    // Redirect unauthorized users to the login page
-    return <Navigate to="/login" />;
+    // // Redirect unauthorized users to the login page
+    // return <Navigate to="/login" />;
+
+    if (!currentUser?.email && !user?.email) {  
+        return <Navigate to="/login" />;
+    }
 };
 
 export default PrivetRoute;

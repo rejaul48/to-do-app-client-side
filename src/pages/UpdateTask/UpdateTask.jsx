@@ -1,8 +1,9 @@
- 
+
 
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import useAxiosPublic from '../../hooks/useAxiosPublic';
+import Swal from 'sweetalert2';
 
 const UpdateTask = () => {
     const { id } = useParams();
@@ -60,11 +61,19 @@ const UpdateTask = () => {
         axiosPublic.put(`/tasks/${id}`, updatedTask)
             .then(res => {
                 console.log("Task updated successfully:", res);
-                alert("Task updated successfully");
+                Swal.fire({
+                    title: "Task updated successfully",
+                    icon: "success",
+                    draggable: true
+                });
             })
             .catch(err => {
                 console.error("Error updating task:", err);
-                alert("Failed to update the task. Please try again.");
+                Swal.fire({
+                    title: "Task update faild!!",
+                    icon: "error",
+                    draggable: true
+                });
             });
     };
 

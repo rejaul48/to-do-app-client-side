@@ -9,7 +9,7 @@ const MainLayout = () => {
 
     const [tasks, setTasks] = useState([])
     const axiosPublic = useAxiosPublic()
-    const { userLogOut, currentUser ,user, theme} = useContext(ToDoContext)
+    const { userLogOut, currentUser, user, theme } = useContext(ToDoContext)
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -21,11 +21,11 @@ const MainLayout = () => {
     }, [])
 
     // show todays-task page by default
-    useEffect(()=>{
-        if(user?.email || currentUser?.email){
-            navigate('/todays-tasks')
+    useEffect(() => {
+        if (user?.email || currentUser?.email) {
+            navigate('/todays-tasks');
         }
-    },[])
+    }, [user, currentUser]);
 
 
 
@@ -48,14 +48,14 @@ const MainLayout = () => {
                     {/* left side menubar for to to task list */}
 
 
-                    <section className={`sticky top-0 left-0  col-span-12 pb-6 md:pb-0 md:col-span-3   px-4 md:min-h-screen ${theme === 'dark' ? "bg-black text-white" : 'bg-[#66785F] text-black'}`}>
+                    <section className={`sticky top-0 left-0  col-span-12 pb-8 md:pb-0 md:col-span-3   px-4 h-fit  md:min-h-screen ${theme === 'dark' ? "bg-black text-white" : 'bg-[#66785F] text-black'}`}>
 
                         {/* menu heading and menu icon for drawer */}
                         <div className='flex items-center justify-between py-4'>
                             <h2 className='text-xl md:text-2xl font-semibold capitalize text-white'>Menu</h2>
-                           <div>
-                            <ThemeToogleButton ></ThemeToogleButton>
-                           </div>
+                            <div>
+                                <ThemeToogleButton ></ThemeToogleButton>
+                            </div>
                         </div>
 
                         {/* some menu links here for some action
@@ -78,7 +78,7 @@ const MainLayout = () => {
 
                                     <div className='space-y-1'>
                                         <li>
-                                            <Link to={'/todays-tasks'} className='flex items-center gap-2 w-full bg-[#91AC8F] p-3 rounded-sm'>
+                                            <Link to={'/todays-tasks'} className='flex items-center gap-2 w-full bg-[#91AC8F] p-3 md:p-1 lg:p-3 rounded-sm'>
                                                 <span><FaTasks /></span>
                                                 <span className='flex items-center justify-between w-full'>Todays Tasks</span>
                                             </Link>
@@ -88,7 +88,7 @@ const MainLayout = () => {
                             </div>
 
                             {/* Sign Out Button - Stays at Bottom */}
-                            <div className='w-full flex items-center justify-center'>
+                            <div className='w-full flex items-center justify-center mt-4 md:mt-0'>
                                 <Link to={'/login'} onClick={handleUserLogout} className='bg-[#B2C9AD] w-full py-3 text-sm cursor-pointer font-bold text-center px-12'>
                                     Sign out
                                 </Link>

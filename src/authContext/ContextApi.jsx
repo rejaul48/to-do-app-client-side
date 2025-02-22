@@ -48,10 +48,12 @@ const ToDoProvider = ({ children }) => {
 
     // Fetch current user based on email
     useEffect(() => {
-        if (user?.email) {
+        if (user?.email && !currentUser) {
             axiosPublic.get(`/register-people/${user?.email}`)
                 .then(res => {
-                    setCurrentUser(res?.data[0]);
+                    if (!currentUser) {
+                        setCurrentUser(res?.data[0]);
+                    }
                     setLoader(false);
                 })
                 .catch(err => {
@@ -59,8 +61,7 @@ const ToDoProvider = ({ children }) => {
                     setLoader(false);
                 });
         }
-    }, [user?.email]);
-
+    }, [user?.email, currentUser]);  // ✅ Now prevents infinite re-renders
 
     // cleate new user
 
@@ -108,15 +109,29 @@ const ToDoProvider = ({ children }) => {
     }
 
     // Firebase Authentication Observer
+    // useEffect(() => {
+    //     setLoader(true);
+    //     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    //         console.log("Auth State Changed:", currentUser);
+    //         setUser(currentUser);
+    //         setLoader(false);
+    //     });
+    //     return () => unsubscribe();
+    // }, []);
+
+
     useEffect(() => {
         setLoader(true);
-        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-            console.log("Auth State Changed:", currentUser);
-            setUser(currentUser);
+        const unsubscribe = onAuthStateChanged(auth, (newUser) => {
+            console.log("Auth State Changed:", newUser);
+            if (newUser?.email !== user?.email) {  
+                setUser(newUser);
+            }
             setLoader(false);
         });
         return () => unsubscribe();
-    }, []);
+    }, [user]);
+
 
     return (
         <ToDoContext.Provider value={info}>
